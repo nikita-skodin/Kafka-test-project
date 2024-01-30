@@ -1,0 +1,2 @@
+docker exec -it 57a9dc113762 /bin/bash - open kafka bash
+kafka-topics --list --bootstrap-server kafka:9092 - topics list
