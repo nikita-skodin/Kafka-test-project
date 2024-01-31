@@ -24,8 +24,14 @@ public class KafkaProducerScheduler {
         log.info("SENDING...");
         Event event = getEvent(counter);
         log.info("EVENT: {}", event);
-        template.send(topicName, String.valueOf(counter++), event);
-        log.info("SUCCESS!");
+        template.send(topicName, String.valueOf(counter++), event)
+                .whenComplete((stringEventSendResult, throwable) -> {
+                    if (throwable == null) {
+                        log.info("SUCCESS!");
+                    } else {
+                        log.error("ERROR: {}", throwable, throwable);
+                    }
+                });
     }
 
     private Event getEvent(int counter) {
