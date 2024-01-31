@@ -14,7 +14,7 @@ public class KafkaConsumerService {
 
     @KafkaListener(
             topics = "${application.kafka.topic}",
-            containerFactory = "listenerContainerFactory")
+            containerFactory = "eventListenerContainerFactory")
     public void listen(@Payload List<Event> batch) {
         for (Event b : batch) {
             log.info("An event has occurred: {}", b);

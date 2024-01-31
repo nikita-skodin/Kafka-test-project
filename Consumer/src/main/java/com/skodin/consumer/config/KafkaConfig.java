@@ -1,6 +1,5 @@
 package com.skodin.consumer.config;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.skodin.consumer.models.Event;
 import com.skodin.consumer.utils.EventDeserializer;
 import lombok.RequiredArgsConstructor;
@@ -35,25 +34,21 @@ public class KafkaConfig {
 
     @Bean
     public ConsumerFactory<String, Event> consumerFactory
-            (KafkaProperties kafkaProperties, ObjectMapper objectMapper) {
+            (KafkaProperties kafkaProperties) {
 
         Map<String, Object> properties = kafkaProperties.buildConsumerProperties(new DefaultSslBundleRegistry());
-
         properties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-//        properties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
-
         properties.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, 3);
         properties.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, 3_000);
 
         DefaultKafkaConsumerFactory<String, Event> factory = new DefaultKafkaConsumerFactory<>(properties);
-
         factory.setValueDeserializer(eventDeserializer);
 
         return factory;
     }
 
     @Bean
-    public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, Event>> listenerContainerFactory
+    public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, Event>> eventListenerContainerFactory
             (ConsumerFactory<String, Event> consumerFactory) {
 
         int concurrency = 1;
