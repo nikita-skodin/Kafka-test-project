@@ -19,7 +19,7 @@ public class KafkaProducerScheduler {
     private final KafkaTemplate<String, Event> template;
     private int counter = 0;
 
-    @Scheduled(fixedDelay = 5_000L)
+    @Scheduled(fixedDelay = 1_000L)
     public void send() {
         log.info("SENDING...");
         Event event = getEvent(counter);

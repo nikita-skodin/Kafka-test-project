@@ -1,2 +1,4 @@
 docker exec -it 57a9dc113762 /bin/bash - open kafka bash
 kafka-topics --list --bootstrap-server kafka:9092 - topics list
+kafka-console-consumer --bootstrap-server localhost:9092 --topic firstTopic - viewing a topic
+kafkacat -b localhost:29092 -C -t firstTopic -e -J - viewing a topic in more detail
