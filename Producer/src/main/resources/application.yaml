@@ -1,1 +1,8 @@
+application:
+  kafka:
+    topic: "firstTopic"
 
+spring:
+  kafka:
+    bootstrap-servers: "localhost:29092"
+    client-id: "demo-producer"
