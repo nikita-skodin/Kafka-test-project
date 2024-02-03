@@ -1,7 +1,9 @@
 package com.skodin.producer.config;
 
 import com.skodin.producer.models.Event;
-import com.skodin.producer.util.EventSerializer;
+import com.skodin.producer.models.Message;
+import com.skodin.producer.util.serializers.EventSerializer;
+import com.skodin.producer.util.serializers.MessageSerializer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.kafka.clients.admin.NewTopic;
@@ -24,17 +26,28 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class KafkaConfig {
 
-    @Value("${application.kafka.topic}")
-    private String topicName;
+    @Value("${application.kafka.topics.first}")
+    private String firstTopicName;
+
+    @Value("${application.kafka.topics.second}")
+    private String secondTopicName;
+
+    @Value("${application.kafka.topics.third}")
+    private String thirdTopicName;
+
+    @Value("${application.kafka.topics.fourth}")
+    private String fourthTopicName;
 
     private final EventSerializer eventSerializer;
+    private final MessageSerializer messageSerializer;
 
     @Bean
-    public ProducerFactory<String, Event> producerFactory
+    public ProducerFactory<String, Event> firstEventProducerFactory
             (KafkaProperties kafkaProperties) {
 
         Map<String, Object> properties = kafkaProperties.buildProducerProperties(new DefaultSslBundleRegistry());
         properties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+        properties.put(ProducerConfig.CLIENT_ID_CONFIG, "first-producer");
 
         DefaultKafkaProducerFactory<String, Event> factory = new DefaultKafkaProducerFactory<>(properties);
 
@@ -44,14 +57,72 @@ public class KafkaConfig {
     }
 
     @Bean
-    public KafkaTemplate<String, Event> kafkaTemplate
-            (ProducerFactory<String, Event> producerFactory) {
-        return new KafkaTemplate<>(producerFactory);
+    public ProducerFactory<String, Event> secondEventProducerFactory
+            (KafkaProperties kafkaProperties) {
+
+        Map<String, Object> properties = kafkaProperties.buildProducerProperties(new DefaultSslBundleRegistry());
+        properties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+        properties.put(ProducerConfig.CLIENT_ID_CONFIG, "second-producer");
+
+        DefaultKafkaProducerFactory<String, Event> factory = new DefaultKafkaProducerFactory<>(properties);
+
+        factory.setValueSerializer(eventSerializer);
+
+        return factory;
     }
 
     @Bean
-    public NewTopic topic() {
-        return TopicBuilder.name(topicName).partitions(1).replicas(1).build();
+    public ProducerFactory<String, Message> firstMessageProducerFactory
+            (KafkaProperties kafkaProperties) {
+
+        Map<String, Object> properties = kafkaProperties.buildProducerProperties(new DefaultSslBundleRegistry());
+        properties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+        properties.put(ProducerConfig.CLIENT_ID_CONFIG, "third-producer");
+
+        DefaultKafkaProducerFactory<String, Message> factory = new DefaultKafkaProducerFactory<>(properties);
+
+        factory.setValueSerializer(messageSerializer);
+
+        return factory;
+    }
+
+
+    @Bean
+    public KafkaTemplate<String, Event> firstEventKafkaTemplate
+            (ProducerFactory<String, Event> firstEventProducerFactory) {
+        return new KafkaTemplate<>(firstEventProducerFactory);
+    }
+
+    @Bean
+    public KafkaTemplate<String, Event> secondEventKafkaTemplate
+            (ProducerFactory<String, Event> secondEventProducerFactory) {
+        return new KafkaTemplate<>(secondEventProducerFactory);
+    }
+
+    @Bean
+    public KafkaTemplate<String, Message> thirdMessageKafkaTemplate
+            (ProducerFactory<String, Message> firstMessageProducerFactory) {
+        return new KafkaTemplate<>(firstMessageProducerFactory);
+    }
+
+    @Bean
+    public NewTopic firstTopic() {
+        return TopicBuilder.name(firstTopicName).partitions(2).replicas(1).build();
+    }
+
+    @Bean
+    public NewTopic secondTopic() {
+        return TopicBuilder.name(secondTopicName).partitions(1).replicas(1).build();
+    }
+
+    @Bean
+    public NewTopic thirdTopic() {
+        return TopicBuilder.name(thirdTopicName).partitions(1).replicas(1).build();
+    }
+
+    @Bean
+    public NewTopic fourthTopic() {
+        return TopicBuilder.name(fourthTopicName).partitions(1).replicas(1).build();
     }
 
 }

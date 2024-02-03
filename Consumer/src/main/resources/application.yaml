@@ -1,11 +1,13 @@
 application:
   kafka:
-    topic: "firstTopic"
+    topics:
+      first: "firstTopic"
+      second: "secondTopic"
+      third: "thirdTopic"
+      fourth: "fourthTopic"
 
 spring:
   kafka:
     bootstrap-servers: "localhost:29092"
     consumer:
-      group-id: "test-group"
-      client-id: "demo-consumer"
       auto-offset-reset: earliest

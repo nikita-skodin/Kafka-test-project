@@ -1,9 +1,11 @@
 application:
   kafka:
-    topic: "firstTopic"
+    topics:
+      first: "firstTopic"
+      second: "secondTopic"
+      third: "thirdTopic"
+      fourth: "fourthTopic"
 
 spring:
   kafka:
     bootstrap-servers: "localhost:29092"
-    producer:
-      client-id: "demo-producer"
